@@ -1,0 +1,7 @@
+streamlit
+pandas
+plotly
+google-api-python-client
+mysql-connector-python
+scikit-learn
+joblib
