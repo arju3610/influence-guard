@@ -1,21 +1,17 @@
+import os
 import pandas as pd
 import streamlit as st
+import mysql.connector
 
 
 def get_connection():
-    import mysql.connector
-
-    required = ["MYSQL_HOST", "MYSQL_PORT", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DATABASE"]
-    missing = [key for key in required if key not in st.secrets]
-    if missing:
-        raise RuntimeError(f"Missing Streamlit secrets: {', '.join(missing)}")
 
     return mysql.connector.connect(
-        host=st.secrets["MYSQL_HOST"],
-        port=st.secrets["MYSQL_PORT"],
-        user=st.secrets["MYSQL_USER"],
-        password=st.secrets["MYSQL_PASSWORD"],
-        database=st.secrets["MYSQL_DATABASE"],
+        host=os.getenv("MYSQL_HOST"),
+        port=int(os.getenv("MYSQL_PORT")),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        database=os.getenv("MYSQL_DATABASE"),
     )
 
 
