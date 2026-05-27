@@ -15,22 +15,25 @@ else:
     # LAST ANALYZED CREATOR
     last_result = st.session_state["history"][-1]
 
-    fraud_score = last_result['fraud_score']
-    engagement = last_result['engagement']
-    subscribers = last_result['subscribers']
-    views = last_result['views']
-    videos = last_result['videos']
-    status = last_result['status']
-    creator = last_result['channel_name']
+    fraud_score = last_result["fraud_score"]
+    engagement = last_result["engagement"]
+    subscribers = last_result["subscribers"]
+    views = last_result["views"]
+    videos = last_result["videos"]
+    status = last_result["status"]
+    creator = last_result["channel_name"]
 
     # ---------------- HEADER CARD ----------------
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class='glass'>
         <h2>🤖 AI Analysis Report</h2>
         <h3>{creator}</h3>
         <p>Analysis completed on {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown("### 📈 Key Metrics")
 
@@ -55,18 +58,28 @@ else:
     st.subheader("🔍 Risk Assessment")
 
     risk_level = "Low" if fraud_score < 40 else "Medium" if fraud_score < 70 else "High"
-    risk_color = "#2ed573" if risk_level == "Low" else "#ffa502" if risk_level == "Medium" else "#ff4757"
+    risk_color = (
+        "#2ed573"
+        if risk_level == "Low"
+        else "#ffa502" if risk_level == "Medium" else "#ff4757"
+    )
 
-    st.markdown(f"<div style='background: {risk_color}20; border-left: 5px solid {risk_color}; padding: 15px; border-radius: 10px;'><strong>Risk Level: {risk_level}</strong></div>", unsafe_allow_html=True)
+    st.markdown(
+        f"<div style='background: {risk_color}20; border-left: 5px solid {risk_color}; padding: 15px; border-radius: 10px;'><strong>Risk Level: {risk_level}</strong></div>",
+        unsafe_allow_html=True,
+    )
 
     st.progress(fraud_score / 100)
 
     # ---------------- AI INSIGHTS ----------------
     st.subheader("🧠 AI-Powered Insights")
 
-    insight, recommendation = generate_detailed_insight(fraud_score, engagement, subscribers, videos)
+    insight, recommendation = generate_detailed_insight(
+        fraud_score, engagement, subscribers, videos
+    )
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class='glass'>
         <h4>📊 Analysis Summary</h4>
         <p>{insight}</p>
@@ -74,7 +87,9 @@ else:
         <h4>💡 Recommendations</h4>
         <p>{recommendation}</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown("---")
 
@@ -105,8 +120,14 @@ else:
     st.subheader("🎯 Final Assessment")
 
     if status == "Fake":
-        st.error("🚨 **HIGH RISK**: This channel shows strong indicators of fake engagement. Avoid collaboration without further verification.")
+        st.error(
+            "🚨 **HIGH RISK**: This channel shows strong indicators of fake engagement. Avoid collaboration without further verification."
+        )
     elif status == "Suspicious":
-        st.warning("⚠️ **MEDIUM RISK**: Some suspicious patterns detected. Consider additional checks before partnership.")
+        st.warning(
+            "⚠️ **MEDIUM RISK**: Some suspicious patterns detected. Consider additional checks before partnership."
+        )
     else:
-        st.success("✅ **LOW RISK**: This appears to be a genuine channel with authentic engagement.")
+        st.success(
+            "✅ **LOW RISK**: This appears to be a genuine channel with authentic engagement."
+        )

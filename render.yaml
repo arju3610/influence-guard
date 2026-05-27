@@ -10,7 +10,7 @@ services:
     # Start the Streamlit app with secrets setup
     startCommand: python start.py
     
-    # Environment variables
+    # Environment variables - set values in Render dashboard
     envVars:
       - key: PYTHONUNBUFFERED
-        value: true
+        value: "true"

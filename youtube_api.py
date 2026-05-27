@@ -1,3 +1,4 @@
+import os
 import re
 from urllib.parse import parse_qs, urlparse
 
@@ -6,9 +7,24 @@ from googleapiclient.discovery import build
 
 
 def get_youtube_client():
-    if "YOUTUBE_API_KEY" not in st.secrets:
-        raise RuntimeError("Missing Streamlit secret: YOUTUBE_API_KEY")
-    return build("youtube", "v3", developerKey=st.secrets["YOUTUBE_API_KEY"])
+    # Try to get API key from secrets first, then fall back to environment variable
+    api_key = None
+    
+    try:
+        if "YOUTUBE_API_KEY" in st.secrets:
+            api_key = st.secrets["YOUTUBE_API_KEY"]
+    except Exception:
+        pass
+    
+    if not api_key:
+        api_key = os.getenv("YOUTUBE_API_KEY")
+    
+    if not api_key:
+        raise RuntimeError(
+            "Missing YouTube API Key. Set YOUTUBE_API_KEY in Streamlit secrets or environment variables."
+        )
+    
+    return build("youtube", "v3", developerKey=api_key)
 
 
 def extract_channel_id(value):

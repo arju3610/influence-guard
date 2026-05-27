@@ -1,5 +1,5 @@
 import streamlit as st
-from youtube_api import get_channel_data
+from youtube_api import get_channel_data, parse_channel_input
 from database import save_creator
 from styles import apply_styles
 
@@ -15,8 +15,15 @@ if st.button("Analyze Channel", type="primary"):
     if not channel_id.strip():
         st.error("Please enter a valid Channel ID")
     else:
+        _, parsed_id = parse_channel_input(channel_id)
+        if not parsed_id:
+            st.error(
+                "Invalid YouTube channel format. Please enter a valid URL, handle, or ID."
+            )
+            st.stop()
+
         with st.spinner("Analyzing channel..."):
-            result = get_channel_data(channel_id)
+            result = get_channel_data(parsed_id)
 
         if result is None:
             st.error("Channel not found or invalid ID. Please check the Channel ID.")
@@ -35,10 +42,10 @@ if st.button("Analyze Channel", type="primary"):
             col1, col2 = st.columns([1, 2])
 
             with col1:
-                st.image(result['thumbnail'], width=150, caption=result['channel_name'])
+                st.image(result["thumbnail"], width=150, caption=result["channel_name"])
 
             with col2:
-                st.subheader(result['channel_name'])
+                st.subheader(result["channel_name"])
                 st.markdown(f"**Status:** {result['status']}")
 
             st.markdown("---")
@@ -62,15 +69,21 @@ if st.button("Analyze Channel", type="primary"):
 
             # Fraud Analysis
             st.subheader("🔍 Fraud Risk Analysis")
-            progress_color = "#ff4757" if result['fraud_score'] > 70 else "#ffa502" if result['fraud_score'] > 40 else "#2ed573"
-            st.progress(result['fraud_score'] / 100)
+            progress_color = (
+                "#ff4757"
+                if result["fraud_score"] > 70
+                else "#ffa502" if result["fraud_score"] > 40 else "#2ed573"
+            )
+            st.progress(result["fraud_score"] / 100)
             st.metric("Fraud Risk Score", f"{result['fraud_score']}%")
 
-            if result['status'] == "Fake":
+            if result["status"] == "Fake":
                 st.error("🚨 High probability of fake audience detected!")
 
-            elif result['status'] == "Suspicious":
-                st.warning("⚠️ Suspicious activity detected. Manual review recommended.")
+            elif result["status"] == "Suspicious":
+                st.warning(
+                    "⚠️ Suspicious activity detected. Manual review recommended."
+                )
 
             else:
                 st.success("✅ Genuine influencer with healthy engagement.")

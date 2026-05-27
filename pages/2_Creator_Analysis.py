@@ -3,12 +3,18 @@ import html
 import streamlit as st
 
 from auth import require_login
-from components.ui import format_number, metric_card, render_sidebar, risk_gauge, setup_page, status_badge
+from components.ui import (
+    format_number,
+    metric_card,
+    render_sidebar,
+    risk_gauge,
+    setup_page,
+    status_badge,
+)
 from database import save_creator
 from insights import generate_detailed_insight
 from styles import apply_styles
 from youtube_api import parse_channel_input, get_channel_data
-
 
 setup_page("Creator Analysis | Influence Guard AI")
 apply_styles()
@@ -31,10 +37,18 @@ if submitted:
         st.error("Enter a valid YouTube channel URL, handle, or channel ID.")
     else:
         with st.spinner("Fetching creator telemetry and scoring authenticity..."):
-            result = get_channel_data(channel_value)
+            try:
+                result = get_channel_data(parsed_value)
+            except Exception as exc:
+                st.error(
+                    f"An unexpected error occurred during API communication: {exc}"
+                )
+                result = None
 
         if result is None:
-            st.error("Channel not found or the API request failed. Check the URL, Channel ID, or API credentials.")
+            st.error(
+                "Channel not found or the API request failed. Check the URL, Channel ID, or API credentials."
+            )
         else:
             st.session_state["last_result"] = result
             st.session_state.setdefault("history", []).append(result)
@@ -79,13 +93,17 @@ st.markdown(
 
 c1, c2, c3, c4 = st.columns(4)
 with c1:
-    metric_card("Subscribers", format_number(result.get("subscribers")), "Audience size")
+    metric_card(
+        "Subscribers", format_number(result.get("subscribers")), "Audience size"
+    )
 with c2:
     metric_card("Total Views", format_number(result.get("views")), "Lifetime views")
 with c3:
     metric_card("Video Count", format_number(result.get("videos")), "Published uploads")
 with c4:
-    metric_card("Engagement Rate", f"{result.get('engagement', 0)}%", "Avg views / subscribers")
+    metric_card(
+        "Engagement Rate", f"{result.get('engagement', 0)}%", "Avg views / subscribers"
+    )
 
 left, right = st.columns([1, 1])
 with left:
