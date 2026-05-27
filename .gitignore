@@ -41,6 +41,9 @@ env/
 .env
 .env.local
 
+# Test files with credentials
+test_db.py
+
 # Model files (optional - remove if you want to commit these)
 # *.pkl
 # *.joblib
